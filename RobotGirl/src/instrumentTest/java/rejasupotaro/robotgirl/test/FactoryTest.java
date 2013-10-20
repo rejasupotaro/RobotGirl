@@ -14,8 +14,8 @@ public class FactoryTest extends AndroidTestCase {
             @Override
             public Bundle set(Bundle bundle) {
                 bundle.putString("name", "John");
-                bundle.putString("age", "24");
-                bundle.putString("admin", "true");
+                bundle.putInt("age", 24);
+                bundle.putBoolean("admin", true);
                 return bundle;
             }
         };

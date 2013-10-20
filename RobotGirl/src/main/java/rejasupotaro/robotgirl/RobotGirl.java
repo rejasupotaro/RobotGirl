@@ -22,6 +22,9 @@ public class RobotGirl {
     public static void define(Factory factory) throws IllegalAccessException, InstantiationException {
         Class<? extends Model> modelClass = (Class<? extends Model>) factory.getModelClass();
         TableInfo tableInfo = Cache.getTableInfo(modelClass);
+        if (tableInfo == null) {
+            tableInfo = new TableInfo(modelClass);
+        }
 
         Bundle attribute = factory.set(new Bundle());
 

@@ -8,7 +8,7 @@ import com.activeandroid.annotation.Table;
 public class User extends Model {
     @Column(name = "name") public String name;
     @Column(name = "age") public int age;
-    @Column(name = "adming") public boolean admin;
+    @Column(name = "admin") public boolean admin;
 
     public User() {
         super();
