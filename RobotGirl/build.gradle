@@ -7,6 +7,10 @@ buildscript {
     }
 }
 
+if (!hasProperty('env')) {
+    env = System.env['GRADLE_ENV'] ?: 'development'
+}
+
 switch (env) {
     case 'development':
         apply plugin: 'android'
