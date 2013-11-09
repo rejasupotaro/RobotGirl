@@ -1,5 +1,6 @@
 package rejasupotaro.robotgirl.test;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.test.AndroidTestCase;
 
@@ -12,21 +13,14 @@ import rejasupotaro.robotgirl.test.models.User;
 
 public class RobotGirlTest extends AndroidTestCase {
 
-    @Override
-    public void setUp() {
-        ActiveAndroid.initialize(new Configuration.Builder(getContext())
-                .setDatabaseName("test")
-                .setDatabaseVersion(1)
-                .create());
-    }
-
     public void testDefine() throws Exception {
-        RobotGirl.define(new Factory("admin", User.class) {
+        RobotGirl.init(getContext(), UriTypeSerializer.class).define(new Factory("admin", User.class) {
             @Override
             public Bundle set(Bundle bundle) {
                 bundle.putString("name", "John");
                 bundle.putInt("age", 24);
                 bundle.putBoolean("admin", true);
+                bundle.putString("uri", "http://rejasupota.ro/");
                 return bundle;
             }
         });
@@ -35,5 +29,6 @@ public class RobotGirlTest extends AndroidTestCase {
         assertEquals("John", user.getName());
         assertEquals(24, user.getAge());
         assertEquals(true, user.isAdmin());
+        assertEquals(Uri.parse("http://rejasupota.ro/"), user.getUri());
     }
 }
