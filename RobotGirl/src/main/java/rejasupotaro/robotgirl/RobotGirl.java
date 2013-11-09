@@ -58,7 +58,12 @@ public class RobotGirl {
     }
 
     public static RobotGirl init(Context context) {
-        init(context, null);
+        init(context, new Class[]{});
+        return null;
+    }
+
+    public static RobotGirl init(Context context, Class<? extends TypeSerializer> typeSerializer) {
+        init(context, new Class[]{ typeSerializer });
         return null;
     }
 
@@ -68,7 +73,7 @@ public class RobotGirl {
         return null;
     }
 
-    public static void define(Factory factory) throws IllegalAccessException, InstantiationException {
+    public static RobotGirl define(Factory factory) throws IllegalAccessException, InstantiationException {
         Class<? extends Model> modelClass = (Class<? extends Model>) factory.getModelClass();
         TableInfo tableInfo = Cache.getTableInfo(modelClass);
         if (tableInfo == null) {
@@ -123,5 +128,6 @@ public class RobotGirl {
         }
 
         sNameModelHashMap.put(factory.getName(), model);
+        return null;
     }
 }
