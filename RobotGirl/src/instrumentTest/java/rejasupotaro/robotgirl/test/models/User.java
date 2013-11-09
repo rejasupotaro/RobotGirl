@@ -6,9 +6,21 @@ import com.activeandroid.annotation.Table;
 
 @Table(name = "Users")
 public class User extends Model {
-    @Column(name = "name") public String name;
-    @Column(name = "age") public int age;
-    @Column(name = "admin") public boolean admin;
+    @Column(name = "name") private String mName;
+    @Column(name = "age") private int mAge;
+    @Column(name = "admin") private boolean mAdmin;
+
+    public String getName() {
+        return mName;
+    }
+
+    public int getAge() {
+        return mAge;
+    }
+
+    public boolean isAdmin() {
+        return mAdmin;
+    }
 
     public User() {
         super();

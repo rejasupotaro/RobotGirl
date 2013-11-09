@@ -32,8 +32,8 @@ public class RobotGirlTest extends AndroidTestCase {
         });
 
         User user = RobotGirl.build("admin");
-        assertEquals("John", user.name);
-        assertEquals(24, user.age);
-        assertEquals(true, user.admin);
+        assertEquals("John", user.getName());
+        assertEquals(24, user.getAge());
+        assertEquals(true, user.isAdmin());
     }
 }
