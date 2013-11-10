@@ -8,18 +8,10 @@ Like Ruby gem `factory_girl`
 Installation
 ------
 
-Add dependency in your build settings.
+Generate jar and put generated jar in your libs directory.
 
-```groovy
-repositories {
-    mavenCentral()
-    maven { url 'https://raw.github.com/rejasupotaro/RobotGirl/master/RobotGirl/repository' }
-}
-
-dependencies {
-    ...
-    compile 'rejasupotaro:robotgirl:0.0.3'
-}
+```sh
+$ gradle jar -Penv=release
 ```
 
 Setup
