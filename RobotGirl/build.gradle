@@ -14,40 +14,54 @@ if (!hasProperty('env')) {
 switch (env) {
     case 'development':
         apply plugin: 'android'
+
+        repositories {
+            mavenCentral()
+        }
+
+        android {
+            compileSdkVersion 18
+            buildToolsVersion "17.0.0"
+
+            defaultConfig {
+                minSdkVersion 9
+                targetSdkVersion 18
+            }
+        }
+
+        dependencies {
+            compile fileTree(dir: 'libs', include: '*.jar')
+        }
+
         break
     case 'release':
-        apply plugin: 'android-library'
-        apply plugin: 'maven'
+        apply plugin: 'java'
 
-        uploadArchives {
-            repositories {
-                mavenDeployer {
-                    repository(url: "file://${projectDir}/repository")
-                    pom.groupId = 'rejasupotaro'
-                    pom.artifactId = 'robotgirl'
-                    pom.version = '0.0.3'
+        sourceCompatibility = 1.6
+
+        jar.baseName = 'robotgirl'
+        archivesBaseName = 'robotgirl'
+
+        sourceSets {
+            main {
+                java {
+                    srcDir 'src/main/java'
                 }
             }
         }
+
+        dependencies {
+            compile fileTree(dir: 'libs', include: '*.jar')
+        }
+
+        task sourcesJar(type: Jar) {
+            classifier = 'sources'
+            from sourceSets.main.allSource
+        }
+
+        artifacts {
+            archives sourcesJar
+        }
+
         break
 }
-
-repositories {
-    mavenCentral()
-}
-
-android {
-    compileSdkVersion 18
-    buildToolsVersion "17.0.0"
-
-    defaultConfig {
-        minSdkVersion 9
-        targetSdkVersion 18
-    }
-}
-
-dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar')
-}
-
-
