@@ -90,33 +90,11 @@ public class RobotGirl {
             field.setAccessible(true);
 
             TypeSerializer typeSerializer = sTypeSerializers.get(fieldType);
-            Object value = null;
-
             if (typeSerializer != null) {
                 fieldType = typeSerializer.getSerializedType();
             }
 
-            if (fieldType.equals(Byte.class) || field.equals(byte.class)) {
-                value = attribute.getByte(fieldName);
-            } else if (fieldType.equals(Short.class) || fieldType.equals(short.class)) {
-                value = attribute.getShort(fieldName);
-            } else if (fieldType.equals(Integer.class) || fieldType.equals(int.class)) {
-                value = attribute.getInt(fieldName);
-            } else if (fieldType.equals(Long.class) || fieldType.equals(long.class)) {
-                value = attribute.getLong(fieldName);
-            } else if (fieldType.equals(Float.class) || fieldType.equals(float.class)) {
-                value = attribute.getFloat(fieldName);
-            } else if (fieldType.equals(Double.class) || fieldType.equals(double.class)) {
-                value = attribute.getDouble(fieldName);
-            } else if (fieldType.equals(Boolean.class) || fieldType.equals(boolean.class)) {
-                value = attribute.getBoolean(fieldName);
-            } else if (fieldType.equals(Character.class) || fieldType.equals(char.class)) {
-                value = attribute.getChar(fieldName);
-            } else if (fieldType.equals(String.class)) {
-                value = attribute.getString(fieldName);
-            } else if (fieldType.equals(Byte[].class) || fieldType.equals(byte[].class)) {
-                value = attribute.getByteArray(fieldName);
-            }
+            Object value = getValue(fieldType, attribute, fieldName);
 
             if (typeSerializer != null) {
                 value = typeSerializer.deserialize(value);
@@ -130,4 +108,16 @@ public class RobotGirl {
         sNameModelHashMap.put(factory.getName(), model);
         return null;
     }
+
+    private static Object getValue(Class<?> fieldType, Bundle attribute, String key) {
+        Object value = null;
+        Class<?> castType = CastMap.getCastType(fieldType);
+
+        if (castType != null) {
+            value = castType.cast(attribute.get(key));
+        }
+
+        return value;
+    }
+
 }
