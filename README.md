@@ -1,9 +1,11 @@
 RobotGirl
 ======
 
+<img src="http://ninjacrunch.com/wp-content/uploads/2011/12/4/2.jpg">
+
 RobotGirl is a fixtures replacement tool for ActiveAndroid
 
-Like Ruby gem `factory_girl`
+Like Ruby gem [factory_girl](https://github.com/thoughtbot/factory_girl)
 
 Installation
 ------
