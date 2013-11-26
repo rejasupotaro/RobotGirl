@@ -42,17 +42,17 @@ public class RobotGirl {
         sIsActiveAndroidAlreadyInitialized = true;
     }
 
-    private static void setsTypeSerializers(Class<? extends TypeSerializer>... typeSerializers) {
+    private static void setTypeSerializers(Class<? extends TypeSerializer>... typeSerializers) {
         if (typeSerializers == null || typeSerializers.length <= 0) return;
 
         for (Class<? extends TypeSerializer> typeSerializer : typeSerializers) {
             try {
-                TypeSerializer instance = (TypeSerializer) typeSerializer.newInstance();
+                TypeSerializer instance = typeSerializer.newInstance();
                 sTypeSerializers.put(instance.getDeserializedType(), instance);
             } catch (InstantiationException e) {
                 Log.e(TAG, "Couldn't instantiate TypeSerializer.", e);
             } catch (IllegalAccessException e) {
-                Log.e(TAG, "IllegalAccessException", e);
+                Log.e(TAG, e.getClass().getName(), e);
             }
         }
     }
@@ -62,14 +62,9 @@ public class RobotGirl {
         return null;
     }
 
-    public static RobotGirl init(Context context, Class<? extends TypeSerializer> typeSerializer) {
-        init(context, new Class[]{ typeSerializer });
-        return null;
-    }
-
     public static RobotGirl init(Context context, Class<? extends TypeSerializer>... typeSerializers) {
         initActiveAndroid(context);
-        setsTypeSerializers(typeSerializers);
+        setTypeSerializers(typeSerializers);
         return null;
     }
 
@@ -84,21 +79,11 @@ public class RobotGirl {
 
         Object model = modelClass.newInstance();
         for (Field field : tableInfo.getFields()) {
-            final String fieldName = tableInfo.getColumnName(field);
-            Class<?> fieldType = field.getType();
-
             field.setAccessible(true);
 
-            TypeSerializer typeSerializer = sTypeSerializers.get(fieldType);
-            if (typeSerializer != null) {
-                fieldType = typeSerializer.getSerializedType();
-            }
-
-            Object value = getValue(fieldType, attribute, fieldName);
-
-            if (typeSerializer != null) {
-                value = typeSerializer.deserialize(value);
-            }
+            Class<?> fieldType = field.getType();
+            String fieldName = tableInfo.getColumnName(field);
+            Object value = readDeserializedValue(fieldType, attribute, fieldName);
 
             if (value != null) {
                 field.set(model, value);
@@ -109,7 +94,22 @@ public class RobotGirl {
         return null;
     }
 
-    private static Object getValue(Class<?> fieldType, Bundle attribute, String key) {
+    private static Object readDeserializedValue(Class<?> fieldType, Bundle attribute, String key) {
+        TypeSerializer typeSerializer = sTypeSerializers.get(fieldType);
+        if (typeSerializer != null) {
+            fieldType = typeSerializer.getSerializedType();
+        }
+
+        Object value = readDataFromBundle(fieldType, attribute, key);
+
+        if (typeSerializer != null) {
+            value = typeSerializer.deserialize(value);
+        }
+
+        return value;
+    }
+
+    private static Object readDataFromBundle(Class<?> fieldType, Bundle attribute, String key) {
         Object value = null;
         Class<?> castType = CastMap.getCastType(fieldType);
 
