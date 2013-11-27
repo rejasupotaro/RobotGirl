@@ -31,13 +31,17 @@ public class RobotGirl {
         return (T) sNameModelHashMap.get(name);
     }
 
-    private static void initActiveAndroid(Context context) {
+    private static void initActiveAndroid(Context testContext, Context targetContext) {
         if (sIsActiveAndroidAlreadyInitialized) return;
 
-        Configuration.Builder configurationBuilder = new Configuration.Builder(context);
+        Configuration.Builder configurationBuilder = new Configuration.Builder(targetContext);
         configurationBuilder.setDatabaseName(TEST_DB_NAME);
         configurationBuilder.setDatabaseVersion(1);
-        ActiveAndroid.initialize(configurationBuilder.create());
+        configurationBuilder.setModelClasses(
+                (Class<? extends Model>[]) ModelScanner.scan(testContext).toArray(new Class[0]));
+        Configuration configuration = configurationBuilder.create();
+
+        ActiveAndroid.initialize(configuration);
 
         sIsActiveAndroidAlreadyInitialized = true;
     }
@@ -57,13 +61,13 @@ public class RobotGirl {
         }
     }
 
-    public static RobotGirl init(Context context) {
-        init(context, new Class[]{});
+    public static RobotGirl init(Context testContext, Context targetContext) {
+        init(testContext, targetContext, new Class[]{});
         return null;
     }
 
-    public static RobotGirl init(Context context, Class<? extends TypeSerializer>... typeSerializers) {
-        initActiveAndroid(context);
+    public static RobotGirl init(Context testContext, Context targetContext, Class<? extends TypeSerializer>... typeSerializers) {
+        initActiveAndroid(testContext, targetContext);
         setTypeSerializers(typeSerializers);
         return null;
     }
