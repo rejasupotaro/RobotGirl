@@ -3,8 +3,7 @@ RobotGirl
 
 <img src="http://ninjacrunch.com/wp-content/uploads/2011/12/4/2.jpg">
 
-RobotGirl is a fixtures replacement tool for ActiveAndroid
-
+RobotGirl is a fixtures replacement library for [ActiveAndroid](http://www.activeandroid.com/).
 Like Ruby gem [factory_girl](https://github.com/thoughtbot/factory_girl)
 
 Installation
@@ -19,10 +18,15 @@ $ gradle jar -Penv=release
 Setup
 ------
 
-In your test cast.
+In your InstrumentationTestCase.
 
 ```java
-RobotGirl.init(getContext(), UriTypeSerializer.class).define(new Factory("admin", User.class) {
+Context testContext = getInstrumentation().getContext();
+Context targetContext = getInstrumentation().getTargetContext();
+
+RobotGirl.init(testContext, targetContext, UriTypeSerializer.class);
+
+RobotGirl.define(new Factory("admin", User.class) {
     @Override
     public Bundle set(Bundle bundle) {
         bundle.putString("name", "John");
@@ -44,6 +48,12 @@ assertEquals(24, user.getAge());
 assertEquals(true, user.isAdmin());
 assertEquals(Uri.parse("http://rejasupota.ro/"), user.getUri());
 ```
+
+TODO
+------
+
+- [x] Create ActiveAndroidTestCase
+- [x] Create Faker
 
 Contributing
 ------
