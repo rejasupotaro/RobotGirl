@@ -1,6 +1,7 @@
 package rejasupotaro.robotgirl;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -12,13 +13,16 @@ import com.activeandroid.serializer.TypeSerializer;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class RobotGirl {
 
     public static final String TAG = RobotGirl.class.getSimpleName();
 
-    private static final String TEST_DB_NAME = "test";
+    private static String sDbName;
+
+    private static List<String> sTableNames;
 
     private static Map<Class<?>, TypeSerializer> sTypeSerializers = new HashMap<Class<?>, TypeSerializer>();
 
@@ -30,14 +34,18 @@ public class RobotGirl {
         return (T) sNameModelHashMap.get(name);
     }
 
-    private static void initActiveAndroid(Context dbContext, Context packageContext) {
+    private static void initActiveAndroid(Context dbContext, Context packageContext,
+            String dbName) {
         if (sIsActiveAndroidAlreadyInitialized) return;
+        sDbName = dbName;
+
+        List<Class<? extends Model>> modelClasses = ModelScanner.scan(packageContext);
+        sTableNames = ModelScanner.getTableNames(modelClasses);
 
         com.activeandroid.Configuration.Builder configurationBuilder = new com.activeandroid.Configuration.Builder(dbContext);
-        configurationBuilder.setDatabaseName(TEST_DB_NAME);
+        configurationBuilder.setDatabaseName(sDbName);
         configurationBuilder.setDatabaseVersion(1);
-        configurationBuilder.setModelClasses(
-                (Class<? extends Model>[]) ModelScanner.scan(packageContext).toArray(new Class[0]));
+        configurationBuilder.setModelClasses(modelClasses.toArray(new Class[0]));
         com.activeandroid.Configuration configuration = configurationBuilder.create();
 
         ActiveAndroid.initialize(configuration);
@@ -60,8 +68,9 @@ public class RobotGirl {
         }
     }
 
-    public static RobotGirl init(Context dbContext, Context packageContext, Class<? extends TypeSerializer>... typeSerializers) {
-        initActiveAndroid(dbContext, packageContext);
+    public static RobotGirl init(Context dbContext, Context packageContext, String dbName,
+            Class<? extends TypeSerializer>... typeSerializers) {
+        initActiveAndroid(dbContext, packageContext, dbName);
         setTypeSerializers(typeSerializers);
         return null;
     }
@@ -118,11 +127,20 @@ public class RobotGirl {
         return value;
     }
 
+    public static void clear() {
+        SQLiteDatabase db = ActiveAndroid.getDatabase();
+        for (String tableName : sTableNames) {
+            db.delete(tableName, null, null);
+        }
+    }
+
     public static class Builder {
 
         private Context dbContext;
 
         private Context packageContext;
+
+        private String dbName = "test.db";
 
         private Class<? extends TypeSerializer>[] typeSerializers;
 
@@ -132,6 +150,11 @@ public class RobotGirl {
 
         public Builder packageContext(Context packageContext) {
             this.packageContext = packageContext;
+            return this;
+        }
+
+        public Builder dbName(String dbName) {
+            this.dbName = dbName;
             return this;
         }
 
@@ -145,7 +168,7 @@ public class RobotGirl {
                 packageContext = dbContext;
             }
 
-            RobotGirl.init(dbContext, packageContext, typeSerializers);
+            RobotGirl.init(dbContext, packageContext, dbName, typeSerializers);
         }
     }
 }
