@@ -1,13 +1,8 @@
 package rejasupotaro.robotgirl.test;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.test.AndroidTestCase;
 import android.test.InstrumentationTestCase;
-
-import com.activeandroid.ActiveAndroid;
-import com.activeandroid.Configuration;
 
 import rejasupotaro.robotgirl.Factory;
 import rejasupotaro.robotgirl.RobotGirl;
@@ -16,10 +11,10 @@ import rejasupotaro.robotgirl.test.models.User;
 public class RobotGirlTest extends InstrumentationTestCase {
 
     public void testDefine() throws Exception {
-        Context testContext = getInstrumentation().getContext();
-        Context targetContext = getInstrumentation().getTargetContext();
-
-        RobotGirl.init(testContext, targetContext, UriTypeSerializer.class);
+        new RobotGirl.Builder(getInstrumentation().getTargetContext())
+                .packageContext(getInstrumentation().getContext())
+                .typeSerializers(UriTypeSerializer.class)
+                .build();
 
         RobotGirl.define(new Factory("admin", User.class) {
             @Override

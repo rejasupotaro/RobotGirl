@@ -6,7 +6,6 @@ import android.util.Log;
 
 import com.activeandroid.ActiveAndroid;
 import com.activeandroid.Cache;
-import com.activeandroid.Configuration;
 import com.activeandroid.Model;
 import com.activeandroid.TableInfo;
 import com.activeandroid.serializer.TypeSerializer;
@@ -31,15 +30,15 @@ public class RobotGirl {
         return (T) sNameModelHashMap.get(name);
     }
 
-    private static void initActiveAndroid(Context testContext, Context targetContext) {
+    private static void initActiveAndroid(Context dbContext, Context packageContext) {
         if (sIsActiveAndroidAlreadyInitialized) return;
 
-        Configuration.Builder configurationBuilder = new Configuration.Builder(targetContext);
+        com.activeandroid.Configuration.Builder configurationBuilder = new com.activeandroid.Configuration.Builder(dbContext);
         configurationBuilder.setDatabaseName(TEST_DB_NAME);
         configurationBuilder.setDatabaseVersion(1);
         configurationBuilder.setModelClasses(
-                (Class<? extends Model>[]) ModelScanner.scan(testContext).toArray(new Class[0]));
-        Configuration configuration = configurationBuilder.create();
+                (Class<? extends Model>[]) ModelScanner.scan(packageContext).toArray(new Class[0]));
+        com.activeandroid.Configuration configuration = configurationBuilder.create();
 
         ActiveAndroid.initialize(configuration);
 
@@ -61,13 +60,8 @@ public class RobotGirl {
         }
     }
 
-    public static RobotGirl init(Context testContext, Context targetContext) {
-        init(testContext, targetContext, new Class[]{});
-        return null;
-    }
-
-    public static RobotGirl init(Context testContext, Context targetContext, Class<? extends TypeSerializer>... typeSerializers) {
-        initActiveAndroid(testContext, targetContext);
+    public static RobotGirl init(Context dbContext, Context packageContext, Class<? extends TypeSerializer>... typeSerializers) {
+        initActiveAndroid(dbContext, packageContext);
         setTypeSerializers(typeSerializers);
         return null;
     }
@@ -124,4 +118,34 @@ public class RobotGirl {
         return value;
     }
 
+    public static class Builder {
+
+        private Context dbContext;
+
+        private Context packageContext;
+
+        private Class<? extends TypeSerializer>[] typeSerializers;
+
+        public Builder(Context dbContext) {
+            this.dbContext = dbContext;
+        }
+
+        public Builder packageContext(Context packageContext) {
+            this.packageContext = packageContext;
+            return this;
+        }
+
+        public Builder typeSerializers(Class<? extends TypeSerializer>... typeSerializers) {
+            this.typeSerializers = typeSerializers;
+            return this;
+        }
+
+        public void build() {
+            if (packageContext == null) {
+                packageContext = dbContext;
+            }
+
+            RobotGirl.init(dbContext, packageContext, typeSerializers);
+        }
+    }
 }
