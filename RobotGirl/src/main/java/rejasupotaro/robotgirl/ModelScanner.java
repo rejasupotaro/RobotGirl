@@ -1,6 +1,7 @@
 package rejasupotaro.robotgirl;
 
 import com.activeandroid.Model;
+import com.activeandroid.annotation.Table;
 import com.activeandroid.util.ReflectionUtils;
 
 import android.content.Context;
@@ -114,4 +115,16 @@ public class ModelScanner {
 
         return null;
     }
+
+    public static List<String> getTableNames(List<Class<? extends Model>> modelClasses) {
+        List<String> tableNames = new ArrayList<String>();
+        for (Class<? extends Model> modelClass : modelClasses) {
+            final Table tableAnnotation = modelClass.getAnnotation(Table.class);
+            if (tableAnnotation != null) {
+                tableNames.add(tableAnnotation.name());
+            }
+        }
+        return tableNames;
+    }
+
 }
