@@ -1,7 +1,7 @@
 RobotGirl
 ======
 
-<img src="http://ninjacrunch.com/wp-content/uploads/2011/12/4/2.jpg">
+<a href="http://molybdenumgp03.deviantart.com/art/robot-girl-195104830"><img src="http://ninjacrunch.com/wp-content/uploads/2011/12/4/2.jpg"></a>
 
 RobotGirl is a fixtures replacement library for [ActiveAndroid](http://www.activeandroid.com/).
 Like Ruby gem [factory_girl](https://github.com/thoughtbot/factory_girl)
@@ -18,24 +18,26 @@ $ gradle jar -Penv=release
 Setup
 ------
 
-In your InstrumentationTestCase.
+Inheritance ActiveAndroidTestCase.
 
 ```java
-Context testContext = getInstrumentation().getContext();
-Context targetContext = getInstrumentation().getTargetContext();
+public class UserTest extends ActiveAndroidTestCase {
 
-RobotGirl.init(testContext, targetContext, UriTypeSerializer.class);
-
-RobotGirl.define(new Factory("admin", User.class) {
     @Override
-    public Bundle set(Bundle bundle) {
-        bundle.putString("name", "John");
-        bundle.putInt("age", 24);
-        bundle.putBoolean("admin", true);
-        bundle.putString("uri", "http://rejasupota.ro/");
-        return bundle;
+    protected void setUp() {
+        super.setUp();
+
+        RobotGirl.define(new Factory("admin", User.class) {
+            @Override
+            public Bundle set(Bundle bundle) {
+                bundle.putString("name", "John");
+                bundle.putInt("age", 24);
+                bundle.putBoolean("admin", true);
+                bundle.putString("uri", "http://rejasupota.ro/");
+                return bundle;
+            }
+        });
     }
-});
 ```
 
 Usage
@@ -52,7 +54,8 @@ assertEquals(Uri.parse("http://rejasupota.ro/"), user.getUri());
 TODO
 ------
 
-- [x] Create ActiveAndroidTestCase
+- [x] Scan TypeSerializers
+- [x] Support association
 - [x] Create Faker
 
 Contributing
