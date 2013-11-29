@@ -38,5 +38,4 @@ public class ModelScanner {
         }
         return tableNames;
     }
-
 }
