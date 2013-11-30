@@ -54,8 +54,8 @@ assertEquals(Uri.parse("http://rejasupota.ro/"), user.getUri());
 TODO
 ------
 
-- [x] Scan TypeSerializers
 - [x] Support association
+- [x] Run Travis
 - [x] Create Faker
 
 Contributing
