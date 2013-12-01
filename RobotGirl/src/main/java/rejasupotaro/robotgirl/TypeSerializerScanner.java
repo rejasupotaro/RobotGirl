@@ -12,8 +12,8 @@ public class TypeSerializerScanner {
     public static List<Class<? extends TypeSerializer>> scan(Context context) {
         List<Class<? extends TypeSerializer>> typeSerializers = PackageScanner.scan(context, new PackageScanner.Filter() {
             @Override
-            public boolean filter(Class clazz) {
-                return ReflectionUtils.isSubclassOf(clazz, TypeSerializer.class);
+            public boolean filter(Class type) {
+                return ReflectionUtils.isSubclassOf(type, TypeSerializer.class);
             }
         });
         return typeSerializers;

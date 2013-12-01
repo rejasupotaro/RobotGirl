@@ -1,7 +1,6 @@
 package rejasupotaro.robotgirl;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,8 +13,6 @@ import dalvik.system.DexFile;
 
 public class PackageScanner {
 
-    public static String TAG = PackageScanner.class.getSimpleName();
-
     public static <T> List<Class<? extends T>> scan(Context context, Filter filter) {
         List<Class<? extends T>> classes = new ArrayList<Class<? extends T>>();
 
@@ -27,11 +24,11 @@ public class PackageScanner {
         String packageName = context.getPackageName();
         for (String path : paths) {
             File file = new File(path);
-            Class<? extends T> clazz =
+            Class<? extends T> type =
                     scanClasses(file, packageName, context.getClassLoader(), filter);
 
-            if (clazz != null) {
-                classes.add(clazz);
+            if (type != null) {
+                classes.add(type);
             }
         }
 
@@ -113,7 +110,6 @@ public class PackageScanner {
 
     public static abstract class Filter {
 
-        public abstract boolean filter(Class clazz);
+        public abstract boolean filter(Class type);
     }
-
 }

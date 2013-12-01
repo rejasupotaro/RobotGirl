@@ -21,8 +21,8 @@ public class ModelScanner {
     public static List<Class<? extends Model>> scan(Context context) {
         List<Class<? extends Model>> modelClasses = PackageScanner.scan(context, new PackageScanner.Filter() {
             @Override
-            public boolean filter(Class clazz) {
-                return ReflectionUtils.isModel(clazz);
+            public boolean filter(Class type) {
+                return ReflectionUtils.isModel(type);
             }
         });
         return modelClasses;
