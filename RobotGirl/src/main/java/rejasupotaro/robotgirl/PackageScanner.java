@@ -104,7 +104,7 @@ public class PackageScanner {
                     return discoveredClass;
                 }
             } catch (ClassNotFoundException e) {
-                Log.e(TAG, "Couldn't create class.", e);
+                // ignore
             }
         }
 
