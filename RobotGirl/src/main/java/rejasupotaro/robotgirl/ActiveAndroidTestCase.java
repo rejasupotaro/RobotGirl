@@ -15,7 +15,7 @@ public class ActiveAndroidTestCase extends InstrumentationTestCase {
         Context targetContext = getInstrumentation().getTargetContext();
         List<Class<? extends TypeSerializer>> typeSerializers =
                 TypeSerializerScanner.scan(targetContext);
-        new RobotGirl.Builder(getInstrumentation().getTargetContext())
+        new RobotGirl.Builder(getInstrumentation().getContext())
                 .packageContext(getInstrumentation().getTargetContext())
                 .typeSerializers(typeSerializers.toArray(new Class[0]))
                 .build();
