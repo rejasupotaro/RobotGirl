@@ -27,7 +27,7 @@ public class RobotGirlTest extends InstrumentationTestCase {
             }
         });
 
-        User user = RobotGirl.build("admin");
+        User user = RobotGirl.build(User.class, "admin");
         assertEquals("John", user.getName());
         assertEquals(24, user.getAge());
         assertEquals(true, user.isAdmin());

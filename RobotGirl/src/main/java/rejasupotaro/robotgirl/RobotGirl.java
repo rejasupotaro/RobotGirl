@@ -27,78 +27,16 @@ public class RobotGirl {
     private static Map<Class<? extends TypeSerializer>, TypeSerializer> sTypeSerializers =
             new HashMap<Class<? extends TypeSerializer>, TypeSerializer>();
 
-    private static Map<String, Object> sNameModelHashMap = new HashMap<String, Object>();
+    private static Map<String, Bundle> sLabelModelAttributesHashMap = new HashMap<String, Bundle>();
 
     private static boolean sIsActiveAndroidAlreadyInitialized = false;
 
     public static <T extends Model> T build(Class<T> type) {
-        return build(type.getSimpleName());
+        return build(type, type.getSimpleName());
     }
 
-    public static <T extends Model> T build(String name) {
-        return (T) sNameModelHashMap.get(name);
-    }
-
-    private static void initActiveAndroid(Context dbContext, Context packageContext,
-            String dbName) {
-        if (sIsActiveAndroidAlreadyInitialized) return;
-        sDbName = dbName;
-
-        List<Class<? extends Model>> modelClasses = ModelScanner.scan(packageContext);
-        sTableNames = ModelScanner.getTableNames(modelClasses);
-
-        com.activeandroid.Configuration.Builder configurationBuilder = new com.activeandroid.Configuration.Builder(dbContext);
-        configurationBuilder.setDatabaseName(sDbName);
-        configurationBuilder.setDatabaseVersion(1);
-        configurationBuilder.setModelClasses(modelClasses.toArray(new Class[0]));
-        com.activeandroid.Configuration configuration = configurationBuilder.create();
-
-        ActiveAndroid.initialize(configuration);
-
-        sIsActiveAndroidAlreadyInitialized = true;
-    }
-
-    private static void setTypeSerializers(Class<? extends TypeSerializer>... typeSerializers) {
-        if (typeSerializers == null || typeSerializers.length <= 0) return;
-
-        for (Class<? extends TypeSerializer> typeSerializer : typeSerializers) {
-            try {
-                TypeSerializer instance = typeSerializer.newInstance();
-                sTypeSerializers.put(
-                        (Class<? extends TypeSerializer>) instance.getDeserializedType(),
-                        instance);
-            } catch (InstantiationException e) {
-                Log.e(TAG, "Couldn't instantiate TypeSerializer.", e);
-            } catch (IllegalAccessException e) {
-                Log.e(TAG, e.getClass().getName(), e);
-            }
-        }
-    }
-
-    public static RobotGirl init(Context dbContext, Context packageContext, String dbName,
-            Class<? extends TypeSerializer>... typeSerializers) {
-        initActiveAndroid(dbContext, packageContext, dbName);
-        setTypeSerializers(typeSerializers);
-        return null;
-    }
-
-    public static RobotGirl define(Factory... factories) {
-        for (Factory factory : factories) {
-            define(factory);
-        }
-        return null;
-    }
-
-    public static RobotGirl define(Factory factory) {
-        Class<? extends Model> modelClass = factory.getType();
-        Bundle attrs = factory.set(new Bundle());
-
-        Model model = buildModelFromAttributes(modelClass, attrs);
-        if (model != null) {
-            sNameModelHashMap.put(factory.getLabel(), model);
-        }
-
-        return null;
+    public static <T extends Model> T build(Class<T> type, String label) {
+        return (T) buildModelFromAttributes(type, sLabelModelAttributesHashMap.get(label));
     }
 
     private static <T extends Model> Model buildModelFromAttributes(Class<T> modelClass, Bundle attrs) {
@@ -155,6 +93,62 @@ public class RobotGirl {
         }
 
         return value;
+    }
+
+    private static void initActiveAndroid(Context dbContext, Context packageContext,
+            String dbName) {
+        if (sIsActiveAndroidAlreadyInitialized) return;
+        sDbName = dbName;
+
+        List<Class<? extends Model>> modelClasses = ModelScanner.scan(packageContext);
+        sTableNames = ModelScanner.getTableNames(modelClasses);
+
+        com.activeandroid.Configuration.Builder configurationBuilder = new com.activeandroid.Configuration.Builder(dbContext);
+        configurationBuilder.setDatabaseName(sDbName);
+        configurationBuilder.setDatabaseVersion(1);
+        configurationBuilder.setModelClasses(modelClasses.toArray(new Class[0]));
+        com.activeandroid.Configuration configuration = configurationBuilder.create();
+
+        ActiveAndroid.initialize(configuration);
+
+        sIsActiveAndroidAlreadyInitialized = true;
+    }
+
+    private static void setTypeSerializers(Class<? extends TypeSerializer>... typeSerializers) {
+        if (typeSerializers == null || typeSerializers.length <= 0) return;
+
+        for (Class<? extends TypeSerializer> typeSerializer : typeSerializers) {
+            try {
+                TypeSerializer instance = typeSerializer.newInstance();
+                sTypeSerializers.put(
+                        (Class<? extends TypeSerializer>) instance.getDeserializedType(),
+                        instance);
+            } catch (InstantiationException e) {
+                Log.e(TAG, "Couldn't instantiate TypeSerializer.", e);
+            } catch (IllegalAccessException e) {
+                Log.e(TAG, e.getClass().getName(), e);
+            }
+        }
+    }
+
+    public static RobotGirl init(Context dbContext, Context packageContext, String dbName,
+            Class<? extends TypeSerializer>... typeSerializers) {
+        initActiveAndroid(dbContext, packageContext, dbName);
+        setTypeSerializers(typeSerializers);
+        return null;
+    }
+
+    public static RobotGirl define(Factory... factories) {
+        for (Factory factory : factories) {
+            define(factory);
+        }
+        return null;
+    }
+
+    public static RobotGirl define(Factory factory) {
+        Bundle attrs = factory.set(new Bundle());
+        sLabelModelAttributesHashMap.put(factory.getLabel(), attrs);
+        return null;
     }
 
     public static void clear() {
