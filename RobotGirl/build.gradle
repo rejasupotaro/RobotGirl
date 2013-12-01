@@ -31,7 +31,6 @@ switch (env) {
 
         dependencies {
             compile files('libs/activeandroid-3.1-SNAPSHOT.jar')
-            compile 'com.android.support:support-v4:18.0.0'
         }
 
         break
