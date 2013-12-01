@@ -91,12 +91,21 @@ public class RobotGirl {
 
     public static RobotGirl define(Factory factory) {
         Class<? extends Model> modelClass = factory.getType();
+        Bundle attrs = factory.set(new Bundle());
+
+        Model model = buildModelFromAttributes(modelClass, attrs);
+        if (model != null) {
+            sNameModelHashMap.put(factory.getLabel(), model);
+        }
+
+        return null;
+    }
+
+    private static <T extends Model> Model buildModelFromAttributes(Class<T> modelClass, Bundle attrs) {
         TableInfo tableInfo = Cache.getTableInfo(modelClass);
         if (tableInfo == null) {
             tableInfo = new TableInfo(modelClass);
         }
-
-        Bundle attribute = factory.set(new Bundle());
 
         try {
             Object model = modelClass.newInstance();
@@ -105,14 +114,14 @@ public class RobotGirl {
 
                 Class<?> fieldType = field.getType();
                 String fieldName = tableInfo.getColumnName(field);
-                Object value = readDeserializedValue(fieldType, attribute, fieldName);
+                Object value = readDeserializedValue(fieldType, attrs, fieldName);
 
                 if (value != null) {
                     field.set(model, value);
                 }
             }
 
-            sNameModelHashMap.put(factory.getLabel(), model);
+            return (T) model;
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
