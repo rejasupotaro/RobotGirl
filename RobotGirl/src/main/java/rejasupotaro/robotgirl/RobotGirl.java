@@ -1,15 +1,16 @@
 package rejasupotaro.robotgirl;
 
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Bundle;
-import android.util.Log;
-
 import com.activeandroid.ActiveAndroid;
 import com.activeandroid.Cache;
 import com.activeandroid.Model;
 import com.activeandroid.TableInfo;
 import com.activeandroid.serializer.TypeSerializer;
+import com.activeandroid.util.ReflectionUtils;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.util.Log;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -27,7 +28,7 @@ public class RobotGirl {
     private static Map<Class<? extends TypeSerializer>, TypeSerializer> sTypeSerializers =
             new HashMap<Class<? extends TypeSerializer>, TypeSerializer>();
 
-    private static Map<String, Bundle> sLabelModelAttributesHashMap = new HashMap<String, Bundle>();
+    private static Map<String, Bundle> sLabelModelAttributesMap = new HashMap<String, Bundle>();
 
     private static boolean sIsActiveAndroidAlreadyInitialized = false;
 
@@ -36,10 +37,11 @@ public class RobotGirl {
     }
 
     public static <T extends Model> T build(Class<T> type, String label) {
-        return (T) buildModelFromAttributes(type, sLabelModelAttributesHashMap.get(label));
+        return (T) buildModelFromAttributes(type, label);
     }
 
-    private static <T extends Model> Model buildModelFromAttributes(Class<T> modelClass, Bundle attrs) {
+    private static <T extends Model> Model buildModelFromAttributes(Class<T> modelClass,
+            String label) {
         TableInfo tableInfo = Cache.getTableInfo(modelClass);
         if (tableInfo == null) {
             tableInfo = new TableInfo(modelClass);
@@ -47,12 +49,13 @@ public class RobotGirl {
 
         try {
             Object model = modelClass.newInstance();
+            Bundle attrs = sLabelModelAttributesMap.get(label);
             for (Field field : tableInfo.getFields()) {
                 field.setAccessible(true);
 
                 Class<?> fieldType = field.getType();
-                String fieldName = tableInfo.getColumnName(field);
-                Object value = readDeserializedValue(fieldType, attrs, fieldName);
+                String columnName = tableInfo.getColumnName(field);
+                Object value = readFieldValue(fieldType, columnName, attrs);
 
                 if (value != null) {
                     field.set(model, value);
@@ -69,27 +72,41 @@ public class RobotGirl {
         return null;
     }
 
-    private static Object readDeserializedValue(Class<?> fieldType, Bundle attribute, String key) {
+    private static Object readFieldValue(Class<?> fieldType, String columnName, Bundle attrs) {
         TypeSerializer typeSerializer = sTypeSerializers.get(fieldType);
         if (typeSerializer != null) {
             fieldType = typeSerializer.getSerializedType();
         }
 
-        Object value = readDataFromBundle(fieldType, attribute, key);
+        Object value = null;
+        if (ReflectionUtils.isModel(fieldType)) {
+            String associationLabel = attrs.getString(columnName);
+            if (associationLabel == null) {
+                value = null;
+            } else {
+                value = build((Class<? extends Model>) fieldType, attrs.getString(columnName));
+            }
+        } else {
+            value = readDataFromBundle(fieldType, columnName, attrs);
+        }
 
-        if (typeSerializer != null) {
+        if (value != null && typeSerializer != null) {
             value = typeSerializer.deserialize(value);
         }
 
         return value;
     }
 
-    private static Object readDataFromBundle(Class<?> fieldType, Bundle attribute, String key) {
+    private static Object readDataFromBundle(Class<?> fieldType, String key, Bundle attrs) {
+        if (attrs == null) {
+            return null;
+        }
+
         Object value = null;
         Class<?> castType = CastMap.getCastType(fieldType);
 
         if (castType != null) {
-            value = castType.cast(attribute.get(key));
+            value = castType.cast(attrs.get(key));
         }
 
         return value;
@@ -97,13 +114,16 @@ public class RobotGirl {
 
     private static void initActiveAndroid(Context dbContext, Context packageContext,
             String dbName) {
-        if (sIsActiveAndroidAlreadyInitialized) return;
+        if (sIsActiveAndroidAlreadyInitialized) {
+            return;
+        }
         sDbName = dbName;
 
         List<Class<? extends Model>> modelClasses = ModelScanner.scan(packageContext);
         sTableNames = ModelScanner.getTableNames(modelClasses);
 
-        com.activeandroid.Configuration.Builder configurationBuilder = new com.activeandroid.Configuration.Builder(dbContext);
+        com.activeandroid.Configuration.Builder configurationBuilder
+                = new com.activeandroid.Configuration.Builder(dbContext);
         configurationBuilder.setDatabaseName(sDbName);
         configurationBuilder.setDatabaseVersion(1);
         configurationBuilder.setModelClasses(modelClasses.toArray(new Class[0]));
@@ -115,7 +135,9 @@ public class RobotGirl {
     }
 
     private static void setTypeSerializers(Class<? extends TypeSerializer>... typeSerializers) {
-        if (typeSerializers == null || typeSerializers.length <= 0) return;
+        if (typeSerializers == null || typeSerializers.length <= 0) {
+            return;
+        }
 
         for (Class<? extends TypeSerializer> typeSerializer : typeSerializers) {
             try {
@@ -147,7 +169,7 @@ public class RobotGirl {
 
     public static RobotGirl define(Factory factory) {
         Bundle attrs = factory.set(new Bundle());
-        sLabelModelAttributesHashMap.put(factory.getLabel(), attrs);
+        sLabelModelAttributesMap.put(factory.getLabel(), attrs);
         return null;
     }
 

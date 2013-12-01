@@ -12,6 +12,7 @@ public class User extends Model {
     @Column(name = "age") private int mAge;
     @Column(name = "admin") private boolean mAdmin;
     @Column(name = "uri") private Uri mUri;
+    @Column(name = "user_group") private UserGroup mUserGroup;
 
     public String getName() {
         return mName;
@@ -27,6 +28,10 @@ public class User extends Model {
 
     public Uri getUri() {
         return mUri;
+    }
+
+    public UserGroup getUserGroup() {
+        return mUserGroup;
     }
 
     public User() {

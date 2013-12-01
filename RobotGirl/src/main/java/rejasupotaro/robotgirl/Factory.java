@@ -28,5 +28,5 @@ public abstract class Factory {
         mLabel = label;
     }
 
-    public abstract Bundle set(Bundle bundle);
+    public abstract Bundle set(Bundle attrs);
 }

@@ -15,10 +15,52 @@ Generate jar and put generated jar in your libs directory.
 $ gradle jar -Penv=release
 ```
 
-Setup
+Defining factories
 ------
 
-Inheritance ActiveAndroidTestCase.
+Each factory has name and set of attributes.
+The name is used to guess the class of the object by default, but it's possible to explicitly specify it:
+
+```java
+RobotGirl.define(
+        // This will guess the User class
+        new Factory(User.class) {
+            @Override
+            public Bundle set(Bundle attrs) {
+                attrs.putString("name", "John");
+                attrs.putBoolean("admin", false);
+                return attrs;
+            }
+        // This will use the User class (Adming would have been guessed)
+        }, new Factory(User.class, "admin") {
+            @Override
+            public Bundle set(Bundle attrs) {
+                attrs.putString("name", "Admin");
+                attrs.putBoolean("admin", true);
+                return attrs;
+            }
+        });
+```
+
+Using factories
+------
+
+```java
+User user = RobotGirl.build(User.class);
+user.getName(); // => "John"
+user.isAdmin(); // => false
+
+User admin = RobotGirl.build(User.class, "admin");
+admin.getName(); // => "Admin"
+admin.isAdmin(); // => true
+```
+
+Associations
+------
+
+It's possible to set up associations within factories.
+If the factory name is the same as the association name, the factory name can be left out.
+
 
 ```java
 public class UserTest extends ActiveAndroidTestCase {
@@ -27,34 +69,34 @@ public class UserTest extends ActiveAndroidTestCase {
     protected void setUp() {
         super.setUp();
 
-        RobotGirl.define(new Factory("admin", User.class) {
-            @Override
-            public Bundle set(Bundle bundle) {
-                bundle.putString("name", "John");
-                bundle.putInt("age", 24);
-                bundle.putBoolean("admin", true);
-                bundle.putString("uri", "http://rejasupota.ro/");
-                return bundle;
-            }
-        });
+        RobotGirl.define(
+                new Factory(User.class) {
+                    @Override
+                    public Bundle set(Bundle attrs) {
+                        attrs.putString("name", "John");
+                        attrs.putInt("age", 24);
+                        attrs.putBoolean("admin", false);
+                        attrs.putString("uri", "http://www.google.com/");
+                        attrs.putString("user_group", "developer");
+                        return attrs;
+                    }
+                }, new Factory(UserGroup.class, "developer") {
+                    @Override
+                    public Bundle set(Bundle attrs) {
+                        attrs.putString("name", "developer");
+                        return attrs;
+                    }
+                }
+        );
+
+        User user = RobotGirl.build(User.class);
+        user.getUserGroup().getName(); // => developer
     }
-```
-
-Usage
-------
-
-```java
-User user = RobotGirl.build("admin");
-assertEquals("John", user.getName());
-assertEquals(24, user.getAge());
-assertEquals(true, user.isAdmin());
-assertEquals(Uri.parse("http://rejasupota.ro/"), user.getUri());
 ```
 
 TODO
 ------
 
-- [x] Support association
 - [x] Run Travis
 - [x] Create Faker
 
