@@ -10,7 +10,7 @@ import rejasupotaro.robotgirl.test.models.User;
 public class FactoryTest extends AndroidTestCase {
 
     public void testCreate() {
-        Factory factory = new Factory("admin", User.class) {
+        Factory factory = new Factory(User.class, "admin") {
             @Override
             public Bundle set(Bundle bundle) {
                 bundle.putString("name", "John");
@@ -20,8 +20,8 @@ public class FactoryTest extends AndroidTestCase {
                 return bundle;
             }
         };
-        assertEquals("admin", factory.getName());
-        assertEquals(User.class, factory.getModelClass());
+        assertEquals("admin", factory.getLabel());
+        assertEquals(User.class, factory.getType());
 
         Bundle bundle = factory.set(new Bundle());
         assertEquals("John", bundle.getString("name"));

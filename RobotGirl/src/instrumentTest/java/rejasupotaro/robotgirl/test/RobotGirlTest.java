@@ -16,7 +16,7 @@ public class RobotGirlTest extends InstrumentationTestCase {
                 .typeSerializers(UriTypeSerializer.class)
                 .build();
 
-        RobotGirl.define(new Factory("admin", User.class) {
+        RobotGirl.define(new Factory(User.class, "admin") {
             @Override
             public Bundle set(Bundle bundle) {
                 bundle.putString("name", "John");

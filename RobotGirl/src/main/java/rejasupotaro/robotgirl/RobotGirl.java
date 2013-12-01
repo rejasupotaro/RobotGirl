@@ -24,11 +24,16 @@ public class RobotGirl {
 
     private static List<String> sTableNames;
 
-    private static Map<Class<?>, TypeSerializer> sTypeSerializers = new HashMap<Class<?>, TypeSerializer>();
+    private static Map<Class<? extends TypeSerializer>, TypeSerializer> sTypeSerializers =
+            new HashMap<Class<? extends TypeSerializer>, TypeSerializer>();
 
     private static Map<String, Object> sNameModelHashMap = new HashMap<String, Object>();
 
     private static boolean sIsActiveAndroidAlreadyInitialized = false;
+
+    public static <T extends Model> T build(Class<T> type) {
+        return build(type.getSimpleName());
+    }
 
     public static <T extends Model> T build(String name) {
         return (T) sNameModelHashMap.get(name);
@@ -59,7 +64,9 @@ public class RobotGirl {
         for (Class<? extends TypeSerializer> typeSerializer : typeSerializers) {
             try {
                 TypeSerializer instance = typeSerializer.newInstance();
-                sTypeSerializers.put(instance.getDeserializedType(), instance);
+                sTypeSerializers.put(
+                        (Class<? extends TypeSerializer>) instance.getDeserializedType(),
+                        instance);
             } catch (InstantiationException e) {
                 Log.e(TAG, "Couldn't instantiate TypeSerializer.", e);
             } catch (IllegalAccessException e) {
@@ -83,7 +90,7 @@ public class RobotGirl {
     }
 
     public static RobotGirl define(Factory factory) {
-        Class<? extends Model> modelClass = (Class<? extends Model>) factory.getModelClass();
+        Class<? extends Model> modelClass = factory.getType();
         TableInfo tableInfo = Cache.getTableInfo(modelClass);
         if (tableInfo == null) {
             tableInfo = new TableInfo(modelClass);
@@ -105,7 +112,7 @@ public class RobotGirl {
                 }
             }
 
-            sNameModelHashMap.put(factory.getName(), model);
+            sNameModelHashMap.put(factory.getLabel(), model);
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {

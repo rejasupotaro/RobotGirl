@@ -1,24 +1,31 @@
 package rejasupotaro.robotgirl;
 
+import com.activeandroid.Model;
+
 import android.os.Bundle;
 
 public abstract class Factory {
 
-    private String mName;
+    private Class mType;
 
-    private Class mModelClass;
+    private String mLabel;
 
-    public String getName() {
-        return mName;
+    public String getLabel() {
+        return mLabel;
     }
 
-    public Class getModelClass() {
-        return mModelClass;
+    public Class<? extends Model> getType() {
+        return mType;
     }
 
-    public Factory(String name, Class modelClass) {
-        mName = name;
-        mModelClass = modelClass;
+    public Factory(Class<? extends Model> type) {
+        mType = type;
+        mLabel = type.getSimpleName();
+    }
+
+    public Factory(Class<? extends Model> type, String label) {
+        mType = type;
+        mLabel = label;
     }
 
     public abstract Bundle set(Bundle bundle);
