@@ -75,7 +75,14 @@ public class RobotGirl {
         return null;
     }
 
-    public static RobotGirl define(Factory factory) throws IllegalAccessException, InstantiationException {
+    public static RobotGirl define(Factory... factories) {
+        for (Factory factory : factories) {
+            define(factory);
+        }
+        return null;
+    }
+
+    public static RobotGirl define(Factory factory) {
         Class<? extends Model> modelClass = (Class<? extends Model>) factory.getModelClass();
         TableInfo tableInfo = Cache.getTableInfo(modelClass);
         if (tableInfo == null) {
@@ -84,20 +91,27 @@ public class RobotGirl {
 
         Bundle attribute = factory.set(new Bundle());
 
-        Object model = modelClass.newInstance();
-        for (Field field : tableInfo.getFields()) {
-            field.setAccessible(true);
+        try {
+            Object model = modelClass.newInstance();
+            for (Field field : tableInfo.getFields()) {
+                field.setAccessible(true);
 
-            Class<?> fieldType = field.getType();
-            String fieldName = tableInfo.getColumnName(field);
-            Object value = readDeserializedValue(fieldType, attribute, fieldName);
+                Class<?> fieldType = field.getType();
+                String fieldName = tableInfo.getColumnName(field);
+                Object value = readDeserializedValue(fieldType, attribute, fieldName);
 
-            if (value != null) {
-                field.set(model, value);
+                if (value != null) {
+                    field.set(model, value);
+                }
             }
+
+            sNameModelHashMap.put(factory.getName(), model);
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
 
-        sNameModelHashMap.put(factory.getName(), model);
         return null;
     }
 
