@@ -12,13 +12,13 @@ public class FactoryTest extends AndroidTestCase {
     public void testCreate() {
         Factory factory = new Factory(User.class, "John") {
             @Override
-            public Bundle set(Bundle bundle) {
-                bundle.putString("name", "John");
-                bundle.putInt("age", 24);
-                bundle.putBoolean("admin", false);
-                bundle.putString("uri", "http://rejasupota.ro/");
-                bundle.putString("user_group", "developer");
-                return bundle;
+            public Bundle set(Bundle attrs) {
+                attrs.putString("name", "John");
+                attrs.putInt("age", 24);
+                attrs.putBoolean("admin", false);
+                attrs.putString("uri", "http://rejasupota.ro/");
+                attrs.putString("user_group", "developer");
+                return attrs;
             }
         };
 

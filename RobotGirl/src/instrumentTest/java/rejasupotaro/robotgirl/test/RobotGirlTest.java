@@ -6,16 +6,19 @@ import android.test.InstrumentationTestCase;
 
 import rejasupotaro.robotgirl.Factory;
 import rejasupotaro.robotgirl.RobotGirl;
+import rejasupotaro.robotgirl.RobotGirlConfiguration;
 import rejasupotaro.robotgirl.test.models.User;
 import rejasupotaro.robotgirl.test.models.UserGroup;
 
 public class RobotGirlTest extends InstrumentationTestCase {
 
     public void testDefineUserGroup() {
-        new RobotGirl.Builder(getInstrumentation().getTargetContext())
-                .packageContext(getInstrumentation().getContext())
-                .typeSerializers(UriTypeSerializer.class)
-                .build();
+        RobotGirlConfiguration conf =
+                new RobotGirlConfiguration.Builder(getInstrumentation().getTargetContext())
+                        .packageContext(getInstrumentation().getContext())
+                        .typeSerializers(UriTypeSerializer.class)
+                        .build();
+        RobotGirl.init(conf);
 
         RobotGirl.define(
                 new Factory(UserGroup.class, "developer") {
@@ -34,10 +37,12 @@ public class RobotGirlTest extends InstrumentationTestCase {
     }
 
     public void testDefineUserWithUserGroup() throws Exception {
-        new RobotGirl.Builder(getInstrumentation().getTargetContext())
-                .packageContext(getInstrumentation().getContext())
-                .typeSerializers(UriTypeSerializer.class)
-                .build();
+        RobotGirlConfiguration conf =
+                new RobotGirlConfiguration.Builder(getInstrumentation().getTargetContext())
+                        .packageContext(getInstrumentation().getContext())
+                        .typeSerializers(UriTypeSerializer.class)
+                        .build();
+        RobotGirl.init(conf);
 
         RobotGirl.define(
                 new Factory(User.class) {
@@ -73,10 +78,12 @@ public class RobotGirlTest extends InstrumentationTestCase {
     }
 
     public void testDefineUserWithNullUserGroup() throws Exception {
-        new RobotGirl.Builder(getInstrumentation().getTargetContext())
-                .packageContext(getInstrumentation().getContext())
-                .typeSerializers(UriTypeSerializer.class)
-                .build();
+        RobotGirlConfiguration conf =
+                new RobotGirlConfiguration.Builder(getInstrumentation().getTargetContext())
+                        .packageContext(getInstrumentation().getContext())
+                        .typeSerializers(UriTypeSerializer.class)
+                        .build();
+        RobotGirl.init(conf);
 
         RobotGirl.define(
                 new Factory(User.class) {

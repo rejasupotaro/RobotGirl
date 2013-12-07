@@ -153,6 +153,11 @@ public class RobotGirl {
         }
     }
 
+    public static RobotGirl init(RobotGirlConfiguration conf) {
+        return init(conf.getDbContext(), conf.getPackageContext(), conf.getDbName(),
+                conf.getTypeSerializers());
+    }
+
     public static RobotGirl init(Context dbContext, Context packageContext, String dbName,
             Class<? extends TypeSerializer>... typeSerializers) {
         initActiveAndroid(dbContext, packageContext, dbName);
@@ -177,44 +182,6 @@ public class RobotGirl {
         SQLiteDatabase db = ActiveAndroid.getDatabase();
         for (String tableName : sTableNames) {
             db.delete(tableName, null, null);
-        }
-    }
-
-    public static class Builder {
-
-        private Context dbContext;
-
-        private Context packageContext;
-
-        private String dbName = "test.db";
-
-        private Class<? extends TypeSerializer>[] typeSerializers;
-
-        public Builder(Context dbContext) {
-            this.dbContext = dbContext;
-        }
-
-        public Builder packageContext(Context packageContext) {
-            this.packageContext = packageContext;
-            return this;
-        }
-
-        public Builder dbName(String dbName) {
-            this.dbName = dbName;
-            return this;
-        }
-
-        public Builder typeSerializers(Class<? extends TypeSerializer>... typeSerializers) {
-            this.typeSerializers = typeSerializers;
-            return this;
-        }
-
-        public void build() {
-            if (packageContext == null) {
-                packageContext = dbContext;
-            }
-
-            RobotGirl.init(dbContext, packageContext, dbName, typeSerializers);
         }
     }
 }
