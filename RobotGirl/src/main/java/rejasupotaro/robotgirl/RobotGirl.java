@@ -28,7 +28,7 @@ public class RobotGirl {
     private static Map<Class<? extends TypeSerializer>, TypeSerializer> sTypeSerializers =
             new HashMap<Class<? extends TypeSerializer>, TypeSerializer>();
 
-    private static Map<String, Bundle> sLabelModelAttributesMap = new HashMap<String, Bundle>();
+    private static Map<String, Factory> sLabelFactoryMap = new HashMap<String, Factory>();
 
     private static boolean sIsActiveAndroidAlreadyInitialized = false;
 
@@ -49,7 +49,7 @@ public class RobotGirl {
 
         try {
             Object model = modelClass.newInstance();
-            Bundle attrs = sLabelModelAttributesMap.get(label);
+            Bundle attrs = sLabelFactoryMap.get(label).set(new Bundle());
             for (Field field : tableInfo.getFields()) {
                 field.setAccessible(true);
 
@@ -173,8 +173,7 @@ public class RobotGirl {
     }
 
     public static RobotGirl define(Factory factory) {
-        Bundle attrs = factory.set(new Bundle());
-        sLabelModelAttributesMap.put(factory.getLabel(), attrs);
+        sLabelFactoryMap.put(factory.getLabel(), factory);
         return null;
     }
 
