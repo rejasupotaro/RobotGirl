@@ -46,10 +46,14 @@ public class Faker {
         int wordArrayEndIndex = source.indexOf(']');
         String[] words = source.substring(wordArrayStartIndex, wordArrayEndIndex).split(" ");
         for (String word : words) {
-            Matcher matcher = PATTERN_WORD_SURROUNDED_DOUBLE_QUOTE.matcher(word);
-            if (matcher.find()) {
-                String result = matcher.group(0);
-                wordList.add(result.substring(1, result.length() - 1));
+            if (word.indexOf('"') != 0) {
+                wordList.add(word.substring(0, word.length() - 1));
+            } else {
+                Matcher matcher = PATTERN_WORD_SURROUNDED_DOUBLE_QUOTE.matcher(word);
+                if (matcher.find()) {
+                    String result = matcher.group(0);
+                    wordList.add(result.substring(1, result.length() - 1));
+                }
             }
         }
         return wordList;
@@ -77,7 +81,7 @@ public class Faker {
             if (sLocale == Locale.JA) {
                 return randomChoice(sLastNameList) + randomChoice(sFirstNameList);
             } else {
-                return randomChoice(sFirstNameList) + randomChoice(sLastNameList);
+                return randomChoice(sFirstNameList) + " " + randomChoice(sLastNameList);
             }
         }
     }

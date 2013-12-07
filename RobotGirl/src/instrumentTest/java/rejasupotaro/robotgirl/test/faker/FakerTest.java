@@ -11,23 +11,38 @@ import rejasupotaro.robotgirl.faker.Locale;
 
 public class FakerTest extends InstrumentationTestCase {
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    public void testGetFirstNameListWithEN() throws IOException {
+        Faker.init(getInstrumentation().getContext(), Locale.EN);
+        List<String> firstNameList = Faker.Name.getFirstNameList();
+        assertEquals(3007, firstNameList.size());
+    }
+
+    public void testGetLastNameListWithEN() throws IOException {
+        Faker.init(getInstrumentation().getContext(), Locale.EN);
+        List<String> firstNameList = Faker.Name.getFirstNameList();
+        assertEquals(3007, firstNameList.size());
+    }
+
+    public void testGetNameWithEN() throws IOException {
+        Faker.init(getInstrumentation().getContext(), Locale.EN);
+        assertNotNull(Faker.Name.name());
+        assertFalse(Faker.Name.name().indexOf(" ") == 0);
+    }
+
+    public void testGetFirstNameListWithJA() throws IOException {
         Faker.init(getInstrumentation().getContext(), Locale.JA);
-    }
-
-    public void testGetFirstNameList() {
         List<String> firstNameList = Faker.Name.getFirstNameList();
         assertEquals(21, firstNameList.size());
     }
 
-    public void testGetLastNameList() {
+    public void testGetLastNameListWithJA() throws IOException {
+        Faker.init(getInstrumentation().getContext(), Locale.JA);
         List<String> firstNameList = Faker.Name.getFirstNameList();
         assertEquals(21, firstNameList.size());
     }
 
-    public void testGetName() {
+    public void testGetNameWithJA() throws IOException {
+        Faker.init(getInstrumentation().getContext(), Locale.JA);
         assertNotNull(Faker.Name.name());
     }
 }
