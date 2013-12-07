@@ -23,6 +23,10 @@ public abstract class Factory {
         mLabel = type.getSimpleName();
     }
 
+    public Bundle get() {
+        return set(new Bundle());
+    }
+
     public Factory(Class<? extends Model> type, String label) {
         mType = type;
         mLabel = label;

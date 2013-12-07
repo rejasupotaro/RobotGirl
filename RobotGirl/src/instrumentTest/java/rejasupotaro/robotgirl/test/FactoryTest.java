@@ -25,7 +25,7 @@ public class FactoryTest extends AndroidTestCase {
         assertEquals("John", factory.getLabel());
         assertEquals(User.class, factory.getType());
 
-        Bundle bundle = factory.set(new Bundle());
+        Bundle bundle = factory.get();
         assertEquals("John", bundle.getString("name"));
         assertEquals(24, bundle.getInt("age"));
         assertEquals(false, bundle.getBoolean("admin"));

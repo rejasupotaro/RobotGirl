@@ -37,11 +37,29 @@ public class RobotGirl {
     }
 
     public static <T extends Model> T build(Class<T> type, String label) {
-        return (T) buildModelFromAttributes(type, label);
+        Factory factory = sLabelFactoryMap.get(label);
+        if (factory == null) {
+            throw new ModelCreateFailedException("Received unknown type or label" +
+                    ": label => " + label +
+                    ", labelFactoryMap => " + sLabelFactoryMap.toString());
+        }
+        Bundle attrs = factory.get();
+        if (attrs == null) {
+            throw new ModelCreateFailedException("Cannot generate model from empty attrs");
+        }
+        return (T) buildModelFromAttributes(type, attrs);
+    }
+
+    public static <T extends Model> T next(Class<T> type) {
+        return next(type, type.getSimpleName());
+    }
+
+    public static <T extends Model> T next(Class<T> type, String label) {
+        return build(type, label);
     }
 
     private static <T extends Model> Model buildModelFromAttributes(Class<T> modelClass,
-            String label) {
+            Bundle attrs) {
         TableInfo tableInfo = Cache.getTableInfo(modelClass);
         if (tableInfo == null) {
             tableInfo = new TableInfo(modelClass);
@@ -49,7 +67,6 @@ public class RobotGirl {
 
         try {
             Object model = modelClass.newInstance();
-            Bundle attrs = sLabelFactoryMap.get(label).set(new Bundle());
             for (Field field : tableInfo.getFields()) {
                 field.setAccessible(true);
 
@@ -57,7 +74,16 @@ public class RobotGirl {
                 String columnName = tableInfo.getColumnName(field);
                 Object value = readFieldValue(fieldType, columnName, attrs);
 
-                if (value != null) {
+                if (value == null) {
+                    if (columnName.equals("Id")) {
+                        field.set(model, 1L);
+                    } else {
+                        Log.d(TAG, "Skip to set value to field" +
+                                ": fieldType => " + fieldType.getSimpleName() +
+                                ", columnName => " + columnName + attrs.toString() +
+                                ", attrs => " + attrs.toString());
+                    }
+                } else {
                     field.set(model, value);
                 }
             }

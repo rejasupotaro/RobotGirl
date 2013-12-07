@@ -7,6 +7,8 @@ import android.test.InstrumentationTestCase;
 import rejasupotaro.robotgirl.Factory;
 import rejasupotaro.robotgirl.RobotGirl;
 import rejasupotaro.robotgirl.RobotGirlConfiguration;
+import rejasupotaro.robotgirl.SequenceFactory;
+import rejasupotaro.robotgirl.test.models.Book;
 import rejasupotaro.robotgirl.test.models.User;
 import rejasupotaro.robotgirl.test.models.UserGroup;
 
@@ -118,5 +120,31 @@ public class RobotGirlTest extends InstrumentationTestCase {
         assertNull(admin.getUserGroup());
 
         RobotGirl.clear();
+    }
+
+    public void testSequence() {
+        RobotGirlConfiguration conf =
+                new RobotGirlConfiguration.Builder(getInstrumentation().getTargetContext())
+                        .packageContext(getInstrumentation().getContext())
+                        .build();
+        RobotGirl.init(conf);
+
+        RobotGirl.define(
+                new SequenceFactory(Book.class) {
+                    @Override
+                    public Bundle set(Bundle attrs, int n) {
+                        attrs.putInt("book_id", 100 + n);
+                        attrs.putString("title", "Land of Lisp #" + n);
+                        return attrs;
+                    }
+                });
+
+        Book book1 = RobotGirl.next(Book.class);
+        assertEquals(100, book1.getBookId());
+        assertEquals("Land of Lisp #0", book1.getTitle());
+
+        Book book2 = RobotGirl.next(Book.class);
+        assertEquals(101, book2.getBookId());
+        assertEquals("Land of Lisp #1", book2.getTitle());
     }
 }
