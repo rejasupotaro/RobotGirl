@@ -5,14 +5,14 @@ import android.os.Bundle;
 import android.test.InstrumentationTestCase;
 
 import rejasupotaro.robotgirl.Definition;
-import rejasupotaro.robotgirl.RobotGirl;
+import rejasupotaro.robotgirl.Factory;
 import rejasupotaro.robotgirl.RobotGirlConfiguration;
 import rejasupotaro.robotgirl.SequenceDefinition;
 import rejasupotaro.robotgirl.test.models.Book;
 import rejasupotaro.robotgirl.test.models.User;
 import rejasupotaro.robotgirl.test.models.UserGroup;
 
-public class RobotGirlTest extends InstrumentationTestCase {
+public class FactoryTest extends InstrumentationTestCase {
 
     public void testDefineUserGroup() {
         RobotGirlConfiguration conf =
@@ -20,9 +20,9 @@ public class RobotGirlTest extends InstrumentationTestCase {
                         .packageContext(getInstrumentation().getContext())
                         .typeSerializers(UriTypeSerializer.class)
                         .build();
-        RobotGirl.init(conf);
+        Factory.init(conf);
 
-        RobotGirl.define(
+        Factory.define(
                 new Definition(UserGroup.class, "developer") {
                     @Override
                     public Bundle set(Bundle bundle) {
@@ -31,11 +31,11 @@ public class RobotGirlTest extends InstrumentationTestCase {
                     }
                 });
 
-        UserGroup userGroup = RobotGirl.build(UserGroup.class, "developer");
+        UserGroup userGroup = Factory.build(UserGroup.class, "developer");
         assertNotNull(userGroup);
         assertEquals("developer", userGroup.getName());
 
-        RobotGirl.clear();
+        Factory.clear();
     }
 
     public void testDefineUserWithUserGroup() throws Exception {
@@ -44,9 +44,9 @@ public class RobotGirlTest extends InstrumentationTestCase {
                         .packageContext(getInstrumentation().getContext())
                         .typeSerializers(UriTypeSerializer.class)
                         .build();
-        RobotGirl.init(conf);
+        Factory.init(conf);
 
-        RobotGirl.define(
+        Factory.define(
                 new Definition(User.class) {
                     @Override
                     public Bundle set(Bundle attrs) {
@@ -66,7 +66,7 @@ public class RobotGirlTest extends InstrumentationTestCase {
                 }
         );
 
-        User user = RobotGirl.build(User.class);
+        User user = Factory.build(User.class);
         assertEquals("John", user.getName());
         assertEquals(24, user.getAge());
         assertFalse(user.isAdmin());
@@ -76,7 +76,7 @@ public class RobotGirlTest extends InstrumentationTestCase {
         assertNotNull(userGroup);
         assertEquals("developer", userGroup.getName());
 
-        RobotGirl.clear();
+        Factory.clear();
     }
 
     public void testDefineUserWithNullUserGroup() throws Exception {
@@ -85,9 +85,9 @@ public class RobotGirlTest extends InstrumentationTestCase {
                         .packageContext(getInstrumentation().getContext())
                         .typeSerializers(UriTypeSerializer.class)
                         .build();
-        RobotGirl.init(conf);
+        Factory.init(conf);
 
-        RobotGirl.define(
+        Factory.define(
                 new Definition(User.class) {
                     @Override
                     public Bundle set(Bundle attrs) {
@@ -107,19 +107,19 @@ public class RobotGirlTest extends InstrumentationTestCase {
                 }
         );
 
-        User user = RobotGirl.build(User.class);
+        User user = Factory.build(User.class);
         assertEquals("John", user.getName());
         assertEquals(24, user.getAge());
         assertFalse(user.isAdmin());
         assertEquals(Uri.parse("http://www.google.com/"), user.getUri());
         assertNull(user.getUserGroup());
 
-        User admin = RobotGirl.build(User.class, "Admin");
+        User admin = Factory.build(User.class, "Admin");
         assertEquals("Admin", admin.getName());
         assertTrue(admin.isAdmin());
         assertNull(admin.getUserGroup());
 
-        RobotGirl.clear();
+        Factory.clear();
     }
 
     public void testSequence() {
@@ -127,9 +127,9 @@ public class RobotGirlTest extends InstrumentationTestCase {
                 new RobotGirlConfiguration.Builder(getInstrumentation().getTargetContext())
                         .packageContext(getInstrumentation().getContext())
                         .build();
-        RobotGirl.init(conf);
+        Factory.init(conf);
 
-        RobotGirl.define(
+        Factory.define(
                 new SequenceDefinition(Book.class) {
                     @Override
                     public Bundle set(Bundle attrs, int n) {
@@ -139,11 +139,11 @@ public class RobotGirlTest extends InstrumentationTestCase {
                     }
                 });
 
-        Book book1 = RobotGirl.next(Book.class);
+        Book book1 = Factory.next(Book.class);
         assertEquals(100, book1.getBookId());
         assertEquals("Land of Lisp #0", book1.getTitle());
 
-        Book book2 = RobotGirl.next(Book.class);
+        Book book2 = Factory.next(Book.class);
         assertEquals(101, book2.getBookId());
         assertEquals("Land of Lisp #1", book2.getTitle());
     }

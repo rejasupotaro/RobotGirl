@@ -22,12 +22,12 @@ public class ActiveAndroidTestCase extends InstrumentationTestCase {
                         .typeSerializers(typeSerializers.toArray(new Class[0]))
                         .build();
 
-        RobotGirl.init(conf);
+        Factory.init(conf);
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
-        RobotGirl.clear();
+        Factory.clear();
     }
 }

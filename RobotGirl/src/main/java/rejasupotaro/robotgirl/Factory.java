@@ -17,9 +17,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RobotGirl {
+public class Factory {
 
-    public static final String TAG = RobotGirl.class.getSimpleName();
+    public static final String TAG = Factory.class.getSimpleName();
 
     private static String sDbName;
 
@@ -179,26 +179,26 @@ public class RobotGirl {
         }
     }
 
-    public static RobotGirl init(RobotGirlConfiguration conf) {
+    public static Factory init(RobotGirlConfiguration conf) {
         return init(conf.getDbContext(), conf.getPackageContext(), conf.getDbName(),
                 conf.getTypeSerializers());
     }
 
-    public static RobotGirl init(Context dbContext, Context packageContext, String dbName,
+    public static Factory init(Context dbContext, Context packageContext, String dbName,
             Class<? extends TypeSerializer>... typeSerializers) {
         initActiveAndroid(dbContext, packageContext, dbName);
         setTypeSerializers(typeSerializers);
         return null;
     }
 
-    public static RobotGirl define(Definition... factories) {
+    public static Factory define(Definition... factories) {
         for (Definition definition : factories) {
             define(definition);
         }
         return null;
     }
 
-    public static RobotGirl define(Definition definition) {
+    public static Factory define(Definition definition) {
         sLabelFactoryMap.put(definition.getLabel(), definition);
         return null;
     }
