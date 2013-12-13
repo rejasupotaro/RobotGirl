@@ -4,10 +4,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.test.InstrumentationTestCase;
 
-import rejasupotaro.robotgirl.Factory;
+import rejasupotaro.robotgirl.Definition;
 import rejasupotaro.robotgirl.RobotGirl;
 import rejasupotaro.robotgirl.RobotGirlConfiguration;
-import rejasupotaro.robotgirl.SequenceFactory;
+import rejasupotaro.robotgirl.SequenceDefinition;
 import rejasupotaro.robotgirl.test.models.Book;
 import rejasupotaro.robotgirl.test.models.User;
 import rejasupotaro.robotgirl.test.models.UserGroup;
@@ -23,7 +23,7 @@ public class RobotGirlTest extends InstrumentationTestCase {
         RobotGirl.init(conf);
 
         RobotGirl.define(
-                new Factory(UserGroup.class, "developer") {
+                new Definition(UserGroup.class, "developer") {
                     @Override
                     public Bundle set(Bundle bundle) {
                         bundle.putString("name", "developer");
@@ -47,7 +47,7 @@ public class RobotGirlTest extends InstrumentationTestCase {
         RobotGirl.init(conf);
 
         RobotGirl.define(
-                new Factory(User.class) {
+                new Definition(User.class) {
                     @Override
                     public Bundle set(Bundle attrs) {
                         attrs.putString("name", "John");
@@ -57,7 +57,7 @@ public class RobotGirlTest extends InstrumentationTestCase {
                         attrs.putString("user_group", "developer");
                         return attrs;
                     }
-                }, new Factory(UserGroup.class, "developer") {
+                }, new Definition(UserGroup.class, "developer") {
                     @Override
                     public Bundle set(Bundle attrs) {
                         attrs.putString("name", "developer");
@@ -88,7 +88,7 @@ public class RobotGirlTest extends InstrumentationTestCase {
         RobotGirl.init(conf);
 
         RobotGirl.define(
-                new Factory(User.class) {
+                new Definition(User.class) {
                     @Override
                     public Bundle set(Bundle attrs) {
                         attrs.putString("name", "John");
@@ -97,7 +97,7 @@ public class RobotGirlTest extends InstrumentationTestCase {
                         attrs.putString("uri", "http://www.google.com/");
                         return attrs;
                     }
-                }, new Factory(User.class, "Admin") {
+                }, new Definition(User.class, "Admin") {
                     @Override
                     public Bundle set(Bundle attrs) {
                         attrs.putString("name", "Admin");
@@ -130,7 +130,7 @@ public class RobotGirlTest extends InstrumentationTestCase {
         RobotGirl.init(conf);
 
         RobotGirl.define(
-                new SequenceFactory(Book.class) {
+                new SequenceDefinition(Book.class) {
                     @Override
                     public Bundle set(Bundle attrs, int n) {
                         attrs.putInt("book_id", 100 + n);

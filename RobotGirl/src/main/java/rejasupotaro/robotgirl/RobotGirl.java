@@ -28,7 +28,7 @@ public class RobotGirl {
     private static Map<Class<? extends TypeSerializer>, TypeSerializer> sTypeSerializers =
             new HashMap<Class<? extends TypeSerializer>, TypeSerializer>();
 
-    private static Map<String, Factory> sLabelFactoryMap = new HashMap<String, Factory>();
+    private static Map<String, Definition> sLabelFactoryMap = new HashMap<String, Definition>();
 
     private static boolean sIsActiveAndroidAlreadyInitialized = false;
 
@@ -37,13 +37,13 @@ public class RobotGirl {
     }
 
     public static <T extends Model> T build(Class<T> type, String label) {
-        Factory factory = sLabelFactoryMap.get(label);
-        if (factory == null) {
+        Definition definition = sLabelFactoryMap.get(label);
+        if (definition == null) {
             throw new ModelCreateFailedException("Received unknown type or label" +
                     ": label => " + label +
                     ", labelFactoryMap => " + sLabelFactoryMap.toString());
         }
-        Bundle attrs = factory.get();
+        Bundle attrs = definition.get();
         if (attrs == null) {
             throw new ModelCreateFailedException("Cannot generate model from empty attrs");
         }
@@ -191,15 +191,15 @@ public class RobotGirl {
         return null;
     }
 
-    public static RobotGirl define(Factory... factories) {
-        for (Factory factory : factories) {
-            define(factory);
+    public static RobotGirl define(Definition... factories) {
+        for (Definition definition : factories) {
+            define(definition);
         }
         return null;
     }
 
-    public static RobotGirl define(Factory factory) {
-        sLabelFactoryMap.put(factory.getLabel(), factory);
+    public static RobotGirl define(Definition definition) {
+        sLabelFactoryMap.put(definition.getLabel(), definition);
         return null;
     }
 

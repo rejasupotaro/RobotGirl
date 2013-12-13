@@ -4,15 +4,15 @@ import android.os.Bundle;
 
 import com.activeandroid.Model;
 
-public abstract class SequenceFactory extends Factory {
+public abstract class SequenceDefinition extends Definition {
 
     private int mIndex = 0;
 
-    public SequenceFactory(Class<? extends Model> type) {
+    public SequenceDefinition(Class<? extends Model> type) {
         super(type);
     }
 
-    public SequenceFactory(Class<? extends Model> type, String label) {
+    public SequenceDefinition(Class<? extends Model> type, String label) {
         super(type, label);
     }
 

@@ -3,14 +3,13 @@ package rejasupotaro.robotgirl.test;
 import android.os.Bundle;
 import android.test.AndroidTestCase;
 
-import rejasupotaro.robotgirl.Factory;
-import rejasupotaro.robotgirl.RobotGirl;
+import rejasupotaro.robotgirl.Definition;
 import rejasupotaro.robotgirl.test.models.User;
 
-public class FactoryTest extends AndroidTestCase {
+public class DefinitionTest extends AndroidTestCase {
 
     public void testCreate() {
-        Factory factory = new Factory(User.class, "John") {
+        Definition definition = new Definition(User.class, "John") {
             @Override
             public Bundle set(Bundle attrs) {
                 attrs.putString("name", "John");
@@ -22,10 +21,10 @@ public class FactoryTest extends AndroidTestCase {
             }
         };
 
-        assertEquals("John", factory.getLabel());
-        assertEquals(User.class, factory.getType());
+        assertEquals("John", definition.getLabel());
+        assertEquals(User.class, definition.getType());
 
-        Bundle bundle = factory.get();
+        Bundle bundle = definition.get();
         assertEquals("John", bundle.getString("name"));
         assertEquals(24, bundle.getInt("age"));
         assertEquals(false, bundle.getBoolean("admin"));

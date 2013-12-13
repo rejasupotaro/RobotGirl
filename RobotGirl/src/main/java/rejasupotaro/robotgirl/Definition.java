@@ -4,7 +4,7 @@ import com.activeandroid.Model;
 
 import android.os.Bundle;
 
-public abstract class Factory {
+public abstract class Definition {
 
     private Class mType;
 
@@ -18,7 +18,7 @@ public abstract class Factory {
         return mType;
     }
 
-    public Factory(Class<? extends Model> type) {
+    public Definition(Class<? extends Model> type) {
         mType = type;
         mLabel = type.getSimpleName();
     }
@@ -27,7 +27,7 @@ public abstract class Factory {
         return set(new Bundle());
     }
 
-    public Factory(Class<? extends Model> type, String label) {
+    public Definition(Class<? extends Model> type, String label) {
         mType = type;
         mLabel = label;
     }

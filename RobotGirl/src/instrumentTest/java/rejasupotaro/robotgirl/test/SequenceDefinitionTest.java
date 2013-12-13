@@ -3,13 +3,13 @@ package rejasupotaro.robotgirl.test;
 import android.os.Bundle;
 import android.test.AndroidTestCase;
 
-import rejasupotaro.robotgirl.SequenceFactory;
+import rejasupotaro.robotgirl.SequenceDefinition;
 import rejasupotaro.robotgirl.test.models.Book;
 
-public class SequenceFactoryTest extends AndroidTestCase {
+public class SequenceDefinitionTest extends AndroidTestCase {
 
     public void testCreate() {
-        SequenceFactory factory = new SequenceFactory(Book.class, "Book") {
+        SequenceDefinition factory = new SequenceDefinition(Book.class, "Book") {
             @Override
             public Bundle set(Bundle attrs, int n) {
                 attrs.putInt("book_id", 100 + n);
