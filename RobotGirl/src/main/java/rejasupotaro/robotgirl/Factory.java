@@ -22,6 +22,18 @@ public class Factory {
 
     private static Map<String, Definition> sLabelFactoryMap = new HashMap<String, Definition>();
 
+    public static <T extends Model> T create(Class<T> type) {
+        T model = build(type, type.getSimpleName());
+        model.save();
+        return model;
+    }
+
+    public static <T extends Model> T create(Class<T> type, String label) {
+        T model = build(type, label);
+        model.save();
+        return model;
+    }
+
     public static <T extends Model> T build(Class<T> type) {
         return build(type, type.getSimpleName());
     }
