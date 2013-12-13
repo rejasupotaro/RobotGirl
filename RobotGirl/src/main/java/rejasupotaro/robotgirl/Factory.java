@@ -1,36 +1,26 @@
 package rejasupotaro.robotgirl;
 
-import com.activeandroid.ActiveAndroid;
+import android.os.Bundle;
+import android.util.Log;
+
 import com.activeandroid.Cache;
 import com.activeandroid.Model;
 import com.activeandroid.TableInfo;
 import com.activeandroid.serializer.TypeSerializer;
 import com.activeandroid.util.ReflectionUtils;
 
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Bundle;
-import android.util.Log;
-
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Factory {
 
     public static final String TAG = Factory.class.getSimpleName();
 
-    private static String sDbName;
-
-    private static List<String> sTableNames;
-
-    private static Map<Class<? extends TypeSerializer>, TypeSerializer> sTypeSerializers =
+    private static Map<Class<? extends TypeSerializer>, TypeSerializer> sTypeSerializerMap =
             new HashMap<Class<? extends TypeSerializer>, TypeSerializer>();
 
     private static Map<String, Definition> sLabelFactoryMap = new HashMap<String, Definition>();
-
-    private static boolean sIsActiveAndroidAlreadyInitialized = false;
 
     public static <T extends Model> T build(Class<T> type) {
         return build(type, type.getSimpleName());
@@ -59,7 +49,7 @@ public class Factory {
     }
 
     private static <T extends Model> Model buildModelFromAttributes(Class<T> modelClass,
-            Bundle attrs) {
+                                                                    Bundle attrs) {
         TableInfo tableInfo = Cache.getTableInfo(modelClass);
         if (tableInfo == null) {
             tableInfo = new TableInfo(modelClass);
@@ -99,7 +89,7 @@ public class Factory {
     }
 
     private static Object readFieldValue(Class<?> fieldType, String columnName, Bundle attrs) {
-        TypeSerializer typeSerializer = sTypeSerializers.get(fieldType);
+        TypeSerializer typeSerializer = sTypeSerializerMap.get(fieldType);
         if (typeSerializer != null) {
             fieldType = typeSerializer.getSerializedType();
         }
@@ -138,75 +128,17 @@ public class Factory {
         return value;
     }
 
-    private static void initActiveAndroid(Context dbContext, Context packageContext,
-            String dbName) {
-        if (sIsActiveAndroidAlreadyInitialized) {
-            return;
-        }
-        sDbName = dbName;
-
-        List<Class<? extends Model>> modelClasses = ModelScanner.scan(packageContext);
-        sTableNames = ModelScanner.getTableNames(modelClasses);
-
-        com.activeandroid.Configuration.Builder configurationBuilder
-                = new com.activeandroid.Configuration.Builder(dbContext);
-        configurationBuilder.setDatabaseName(sDbName);
-        configurationBuilder.setDatabaseVersion(1);
-        configurationBuilder.setModelClasses(modelClasses.toArray(new Class[0]));
-        com.activeandroid.Configuration configuration = configurationBuilder.create();
-
-        ActiveAndroid.initialize(configuration);
-
-        sIsActiveAndroidAlreadyInitialized = true;
+    static void init(Map<Class<? extends TypeSerializer>, TypeSerializer> typeSerializerMap) {
+        sTypeSerializerMap = typeSerializerMap;
     }
 
-    private static void setTypeSerializers(Class<? extends TypeSerializer>... typeSerializers) {
-        if (typeSerializers == null || typeSerializers.length <= 0) {
-            return;
-        }
-
-        for (Class<? extends TypeSerializer> typeSerializer : typeSerializers) {
-            try {
-                TypeSerializer instance = typeSerializer.newInstance();
-                sTypeSerializers.put(
-                        (Class<? extends TypeSerializer>) instance.getDeserializedType(),
-                        instance);
-            } catch (InstantiationException e) {
-                Log.e(TAG, "Couldn't instantiate TypeSerializer.", e);
-            } catch (IllegalAccessException e) {
-                Log.e(TAG, e.getClass().getName(), e);
-            }
-        }
-    }
-
-    public static Factory init(RobotGirlConfiguration conf) {
-        return init(conf.getDbContext(), conf.getPackageContext(), conf.getDbName(),
-                conf.getTypeSerializers());
-    }
-
-    public static Factory init(Context dbContext, Context packageContext, String dbName,
-            Class<? extends TypeSerializer>... typeSerializers) {
-        initActiveAndroid(dbContext, packageContext, dbName);
-        setTypeSerializers(typeSerializers);
-        return null;
-    }
-
-    public static Factory define(Definition... factories) {
+    public static void define(Definition... factories) {
         for (Definition definition : factories) {
             define(definition);
         }
-        return null;
     }
 
-    public static Factory define(Definition definition) {
+    public static void define(Definition definition) {
         sLabelFactoryMap.put(definition.getLabel(), definition);
-        return null;
-    }
-
-    public static void clear() {
-        SQLiteDatabase db = ActiveAndroid.getDatabase();
-        for (String tableName : sTableNames) {
-            db.delete(tableName, null, null);
-        }
     }
 }

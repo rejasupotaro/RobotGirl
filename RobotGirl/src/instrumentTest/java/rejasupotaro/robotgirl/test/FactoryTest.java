@@ -6,6 +6,7 @@ import android.test.InstrumentationTestCase;
 
 import rejasupotaro.robotgirl.Definition;
 import rejasupotaro.robotgirl.Factory;
+import rejasupotaro.robotgirl.RobotGirl;
 import rejasupotaro.robotgirl.RobotGirlConfiguration;
 import rejasupotaro.robotgirl.SequenceDefinition;
 import rejasupotaro.robotgirl.test.models.Book;
@@ -20,7 +21,7 @@ public class FactoryTest extends InstrumentationTestCase {
                         .packageContext(getInstrumentation().getContext())
                         .typeSerializers(UriTypeSerializer.class)
                         .build();
-        Factory.init(conf);
+        RobotGirl.init(conf);
 
         Factory.define(
                 new Definition(UserGroup.class, "developer") {
@@ -35,7 +36,7 @@ public class FactoryTest extends InstrumentationTestCase {
         assertNotNull(userGroup);
         assertEquals("developer", userGroup.getName());
 
-        Factory.clear();
+        RobotGirl.clear();
     }
 
     public void testDefineUserWithUserGroup() throws Exception {
@@ -44,7 +45,7 @@ public class FactoryTest extends InstrumentationTestCase {
                         .packageContext(getInstrumentation().getContext())
                         .typeSerializers(UriTypeSerializer.class)
                         .build();
-        Factory.init(conf);
+        RobotGirl.init(conf);
 
         Factory.define(
                 new Definition(User.class) {
@@ -76,7 +77,7 @@ public class FactoryTest extends InstrumentationTestCase {
         assertNotNull(userGroup);
         assertEquals("developer", userGroup.getName());
 
-        Factory.clear();
+        RobotGirl.clear();
     }
 
     public void testDefineUserWithNullUserGroup() throws Exception {
@@ -85,7 +86,7 @@ public class FactoryTest extends InstrumentationTestCase {
                         .packageContext(getInstrumentation().getContext())
                         .typeSerializers(UriTypeSerializer.class)
                         .build();
-        Factory.init(conf);
+        RobotGirl.init(conf);
 
         Factory.define(
                 new Definition(User.class) {
@@ -119,7 +120,7 @@ public class FactoryTest extends InstrumentationTestCase {
         assertTrue(admin.isAdmin());
         assertNull(admin.getUserGroup());
 
-        Factory.clear();
+        RobotGirl.clear();
     }
 
     public void testSequence() {
@@ -127,7 +128,7 @@ public class FactoryTest extends InstrumentationTestCase {
                 new RobotGirlConfiguration.Builder(getInstrumentation().getTargetContext())
                         .packageContext(getInstrumentation().getContext())
                         .build();
-        Factory.init(conf);
+        RobotGirl.init(conf);
 
         Factory.define(
                 new SequenceDefinition(Book.class) {
