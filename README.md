@@ -12,6 +12,8 @@ Installation
 Generate jar and put generated jar in your libs directory.
 
 ```sh
+$ git clone https://github.com/rejasupotaro/RobotGirl.git
+$ cd RobotGirl
 $ gradle jar -Penv=release
 ```
 
