@@ -38,8 +38,9 @@ switch (env) {
 
         sourceCompatibility = 1.6
 
-        jar.baseName = 'robotgirl'
-        archivesBaseName = 'robotgirl'
+        group = 'rejasupotaro'
+        archivesBaseName = 'RobotGirl'
+        version = '0.0.1'
 
         sourceSets {
             main {
