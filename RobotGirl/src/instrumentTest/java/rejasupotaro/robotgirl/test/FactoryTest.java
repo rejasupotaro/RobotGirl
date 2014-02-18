@@ -24,17 +24,30 @@ public class FactoryTest extends InstrumentationTestCase {
         RobotGirl.init(conf);
 
         Factory.define(
-                new Definition(UserGroup.class, "developer") {
+                new Definition(UserGroup.class, "developer1") {
                     @Override
                     public Bundle set(Bundle bundle) {
-                        bundle.putString("name", "developer");
+                        bundle.putString("name", "developer1");
+                        return bundle;
+                    }
+                }, new Definition(UserGroup.class, "developer2") {
+                    @Override
+                    public Bundle set(Bundle bundle) {
+                        bundle.putString("name", "developer2");
                         return bundle;
                     }
                 });
 
-        UserGroup userGroup = Factory.build(UserGroup.class, "developer");
-        assertNotNull(userGroup);
-        assertEquals("developer", userGroup.getName());
+        {
+            UserGroup userGroup = Factory.build(UserGroup.class, "developer1");
+            assertNotNull(userGroup);
+            assertEquals("developer1", userGroup.getName());
+        }
+        {
+            UserGroup userGroup = Factory.build(UserGroup.class, "developer2");
+            assertNotNull(userGroup);
+            assertEquals("developer2", userGroup.getName());
+        }
 
         RobotGirl.clear();
     }

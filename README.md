@@ -1,4 +1,4 @@
-RobotGirl
+RobotGirl [![wercker status](https://app.wercker.com/status/4c80f0762f2a4f416329f08341e90e3b/s/ "wercker status")](https://app.wercker.com/project/bykey/4c80f0762f2a4f416329f08341e90e3b)
 ======
 
 <a href="http://molybdenumgp03.deviantart.com/art/robot-girl-195104830"><img src="https://dl.dropboxusercontent.com/u/54255753/blog/201312/robotgirl.png"></a>
